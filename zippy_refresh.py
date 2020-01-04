@@ -17,24 +17,19 @@ from timeit import timeit
 # change this to how many concurrent threads
 THREADS=16
 
-
 re_fileid = re.compile(r'https?://(\w+\.zippyshare\.com)/./(\w+)/', re.IGNORECASE)
-re_vara = re.compile(r'var a = (\d+)')
-re_varb = re.compile(r'var b = (\d+)')
-re_varc = re.compile(r'a \+ (\d+)%b')
+re_pageid = re.compile(r'\s*document\.getElementById\(\'dlbutton\'\)\.href = "/([p]?d)/\w+/" \+ \((.*?)\) \+ "/(.*)";', re.IGNORECASE)
 def fetch(session, url):
     with session.get(url) as response:
         data = response.text
         if response.status_code == 200:
             try:
-                a=int(re_vara.search(data).group(1))
-                b=int(re_varb.search(data).group(1))
-                c=int(re_varc.search(data).group(1))
-                d = int(int(a/3) + c % int(b/3))
-                # print(a, b, c, d)
+                page_parser = re_pageid.search(data)
+                modulo_string = eval(page_parser[2])
+                # print(modulo_string)
 
                 m = re_fileid.search(url)
-                url2 = "https://%s/d/%s/%d/file.html" % (m.group(1), m.group(2), d)
+                url2 = 'http://%s/d/%s/%d/file.html' % (m.group(1), m.group(2), modulo_string)
                 resp2 = session.head(url2)
                 # print(resp2.headers)
 
