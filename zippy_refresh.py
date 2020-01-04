@@ -25,7 +25,7 @@ def fetch(session, url):
         if response.status_code == 200:
             try:
                 page_parser = re_pageid.search(data)
-                modulo_string = eval(page_parser[2])
+                modulo_string = eval(page_parser.group(2))
                 # print(modulo_string)
 
                 m = re_fileid.search(url)
